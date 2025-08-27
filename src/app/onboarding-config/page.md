@@ -19,7 +19,7 @@ The `OnboardingEngineConfig` is an object that brings together all aspects of yo
 import { OnboardingEngineConfig, OnboardingStep } from "@onboardjs/core";
 
 export const myAppOnboardingConfig: OnboardingEngineConfig = {
-  // 1. Define your steps (see below)
+  // 1. Define your steps (see next page)
   steps: [ /* ... your step objects ... */ ],
 
   // 2. (Optional) Tell it where to start
@@ -41,27 +41,6 @@ export const myAppOnboardingConfig: OnboardingEngineConfig = {
 };
 ```
 
-## Defining a Step `OnboardingStep`
-
-Each step in the `steps` array is an object with a few important properties:
-
-```tsx
-// Example of a single step object
-const welcomeStep: OnboardingStep = {
-  id: "welcome", // Unique ID for this step
-  type: "INFORMATION", // What kind of step is this? (e.g., "INFORMATION", "SINGLE_CHOICE", "CUSTOM_COMPONENT")
-  payload: {       
-    // Data for this step
-    title: "Welcome to Our App!",
-    mainText: "We're glad to have you.",
-    ctaButtonText: "Next", // Text for the main action button
-  },
-  nextStep: "feature-overview", // (Optional) ID of the step to go to next
-  // previousStep: "some-other-step-id", // Optional: ID of the previous step
-  // condition: (context) => context.flowData.userIsAdmin === true, // Optional: Only show if condition is met
-};
-```
-
 ## The context and flowData
 
 Throughout your onboarding, OnboardJS maintains a `context` object. A special part of this is `context.flowData`.
@@ -71,41 +50,3 @@ Throughout your onboarding, OnboardJS maintains a `context` object. A special pa
   - Track progress or choices.
   - Use it in condition functions to show/hide steps.
   - Use it in nextStep functions for dynamic routing.
-
-## Putting It Together (Minimal Example)
-
-```tsx
-// onboarding-config.ts
-import { OnboardingEngineConfig, OnboardingStep } from "@onboardjs/core";
-
-const steps: OnboardingStep[] = [
-  {
-    id: "step1",
-    type: "INFORMATION",
-    payload: { title: "Step 1: Welcome", mainText: "Hello there!" },
-    nextStep: "step2",
-  },
-  {
-    id: "step2",
-    type: "INFORMATION",
-    payload: { title: "Step 2: You're Done!", mainText: "That was easy." },
-    nextStep: null, // End of flow
-    previousStep: "step1",
-  },
-];
-
-export const minimalOnboardingConfig: OnboardingEngineConfig = {
-  steps: steps,
-  initialStepId: "step1",
-  onFlowComplete: () => {
-    alert("Onboarding finished!");
-  },
-};
-```
-
-This configuration defines the "what" and "when" of your onboarding. The "how it looks" is up to your React components that will use this configuration via `@onboardjs/react`.
-
-## Next Steps
-
-- Learn how to use this configuration with the [`OnboardingProvider`](/react/onboarding-provider) in your React app.
-- See how to access and control the flow using the [`useOnboarding` hook](/react/use-onboarding-hook).

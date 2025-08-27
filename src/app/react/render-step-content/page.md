@@ -84,8 +84,10 @@ const steps: OnboardingStep[] = [
 Each step component receives the following props:
 
 ```tsx
-interface StepComponentProps<TContext = any> {
-  payload: any
+import type { StepComponentProps } from '@onboardjs/react'
+
+interface StepComponentProps<TPayload = any, TContext = any> {
+  payload: TPayload
   /**
    * The full context of the current onboarding session.
    * This includes any data collected so far, such as answers to previous steps.
@@ -112,14 +114,13 @@ function MyCustomComponent({
   const { updateContext, next } = useOnboarding()
 
   const handleSubmit = async () => {
-    await updateContext({ flowData: { answers: { custom: true } } })
-    next()
+    updateContext({ flowData: { answers: { custom: true } } })
   }
 
   return (
     <div>
       <h2>{payload.title}</h2>
-      <button onClick={handleSubmit}>Continue</button>
+      <button onClick={handleSubmit}>Send</button>
     </div>
   )
 }

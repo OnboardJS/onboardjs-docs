@@ -17,7 +17,10 @@ Call `useOnboarding()` inside any component wrapped by `OnboardingProvider`:
 ```tsx
 import { useOnboarding } from '@onboardjs/react'
 
-function OnboardingStep() {
+/**
+ * For wrapping your onboarding experience in a layout.
+ */
+export function OnboardingUI() {
   const { state, next, previous, skip, goToStep, updateContext, renderStep } =
     useOnboarding()
 
@@ -25,70 +28,14 @@ function OnboardingStep() {
 
   return (
     <div>
-      <div>
-        {renderStep()}
-      </div>
-      <button onClick={previous} disabled={!state.canGoPrevious}>
+      <div>{renderStep()}</div>
+      <button onClick={() => previous()} disabled={!state.canGoPrevious}>
         Back
       </button>
-      <button onClick={next} disabled={!state.canGoNext}>
+      <button onClick={() => next()} disabled={!state.canGoNext}>
         Next
       </button>
-      {state.isSkippable && <button onClick={skip}>Skip</button>}
-    </div>
-  )
-}
-```
-
----
-
-## Return Value
-
-The hook returns an object with the following properties and actions:
-
-| Property/Action       | Type / Signature                                                           | Description                                                               |
-| --------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `engine`              | `OnboardingEngine<TContext>`                                               | The underlying onboarding engine instance.                                |
-| `state`               | `EngineState<TContext>`                                                    | The current onboarding state (step, context, navigation flags, etc).      |
-| `renderStep`          | `() => React.ReactNode`                                                    | Function to render the current step's content based on the **component registry**. |
-| `isLoading`           | `boolean`                                                                  | `true` if the engine is loading or hydrating.                             |
-| `currentStep`         | `OnboardingStep<TContext> \| null \| undefined`                            | The current step object, `undefined` if not stated or `null` if finished. |
-| `isCompleted`         | `boolean`                                                                  | `true` if the onboarding flow is complete.                                |
-| `next`                | `(data?: any) => Promise<void>`                                            | Advance to the next step. Optionally merge data into context.             |
-| `previous`            | `() => Promise<void>`                                                      | Go to the previous step.                                                  |
-| `skip`                | `() => Promise<void>`                                                      | Skip the current step (if skippable).                                     |
-| `goToStep`            | `(id: string \| number, data?: any) => Promise<void>`                      | Jump to a specific step by ID. Optionally merge data into context.        |
-| `updateContext`       | `(newContext: Partial<TContext>) => Promise<void>`                         | Merge new data into the onboarding context.                               |
-| `reset`               | `(newConfig?: Partial<OnboardingEngineConfig<TContext>>) => Promise<void>` | Reset the onboarding flow. Optionally provide new config.                 |
-| `setComponentLoading` | `(isLoading: boolean) => void`                                             | Set a loading state for custom step components.                           |
-
----
-
-## Example: Custom Navigation
-
-```tsx
-function MyOnboarding() {
-  const { state, next, previous, skip, updateContext, renderStep } = useOnboarding()
-
-  const handleChoice = async (choice: string) => {
-    await updateContext({
-      answers: { ...state.context.answers, step1: choice },
-    })
-    await next()
-  }
-
-  return (
-    <div>
-      <h2>{state.currentStep?.payload.question}</h2>
-      <div>
-        {renderStep()}
-      </div>
-      <button onClick={() => handleChoice('A')}>A</button>
-      <button onClick={() => handleChoice('B')}>B</button>
-      <button onClick={previous} disabled={!state.canGoPrevious}>
-        Back
-      </button>
-      {state.isSkippable && <button onClick={skip}>Skip</button>}
+      {state.isSkippable && <button onClick={() => skip()}>Skip</button>}
     </div>
   )
 }
@@ -98,7 +45,7 @@ function MyOnboarding() {
 
 ## Example: Rendering Step Content
 
-You must specify a `componentRegistry` for the `OnboardingProvider` to map step types or IDs to custom React components. This allows you to render different content for each step based on its type or ID.
+Check out the [Defining steps](/steps/defining-steps) page for how to create custom step components and use the component registry.
 
 ```tsx
 const componentRegistry = {
@@ -108,14 +55,50 @@ const componentRegistry = {
   // ...other mappings
 }
 
+...
+
+<OnboardingProvider componentRegistry={componentRegistry}>
+  <OnboardingUI />
+</OnboardingProvider>
+
+...
+
 function OnboardingUI() {
   const { renderStepContent, state, currentStep, renderStep } = useOnboarding()
 
   if (state.isCompleted) return <div>All done!</div>
 
+  return <div>{renderStep()}</div>
+}
+```
+
+---
+
+## Example: Updating the Context
+
+```tsx
+function MyOnboarding() {
+  const { state, next, previous, skip, updateContext, renderStep } =
+    useOnboarding()
+
+  const handleChoice = (choice: string) => {
+    updateContext({
+      flowData: {
+        answers: { step1: choice },
+      },
+    })
+  }
+
   return (
     <div>
-      {renderStep()}
+      <h2>{state.currentStep?.payload.question}</h2>
+      <div>{renderStep()}</div>
+      <button onClick={() => handleChoice('A')}>A</button>
+      <button onClick={() => handleChoice('B')}>B</button>
+      <button onClick={() => previous()} disabled={!state.canGoPrevious}>
+        Back
+      </button>
+      {state.isSkippable && <button onClick={() => skip()}>Skip</button>}
     </div>
   )
 }
@@ -141,3 +124,25 @@ function OnboardingUI() {
 - Integrates seamlessly with custom UIs and your component registry.
 
 For more, see [Rendering Step Content](/react/render-step-content) and [Examples & Recipes](/react/examples).
+
+---
+
+## Return Value
+
+The hook returns an object with the following properties and actions:
+
+| Property/Action       | Type / Signature                                                           | Description                                                                        |
+| --------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `engine`              | `OnboardingEngine<TContext>`                                               | The underlying onboarding engine instance.                                         |
+| `state`               | `EngineState<TContext>`                                                    | The current onboarding state (step, context, navigation flags, etc).               |
+| `renderStep`          | `() => React.ReactNode`                                                    | Function to render the current step's content based on the **component registry**. |
+| `isLoading`           | `boolean`                                                                  | `true` if the engine is loading or hydrating.                                      |
+| `currentStep`         | `OnboardingStep<TContext> \| null \| undefined`                            | The current step object, `undefined` if not stated or `null` if finished.          |
+| `isCompleted`         | `boolean`                                                                  | `true` if the onboarding flow is complete.                                         |
+| `next`                | `(data?: any) => Promise<void>`                                            | Advance to the next step. Optionally merge data into context.                      |
+| `previous`            | `() => Promise<void>`                                                      | Go to the previous step.                                                           |
+| `skip`                | `() => Promise<void>`                                                      | Skip the current step (if skippable).                                              |
+| `goToStep`            | `(id: string \| number, data?: any) => Promise<void>`                      | Jump to a specific step by ID. Optionally merge data into context.                 |
+| `updateContext`       | `(newContext: Partial<TContext>) => Promise<void>`                         | Merge new data into the onboarding context.                                        |
+| `reset`               | `(newConfig?: Partial<OnboardingEngineConfig<TContext>>) => Promise<void>` | Reset the onboarding flow. Optionally provide new config.                          |
+| `setComponentLoading` | `(isLoading: boolean) => void`                                             | Set a loading state for custom step components.                                    |

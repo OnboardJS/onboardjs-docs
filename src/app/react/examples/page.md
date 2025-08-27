@@ -13,12 +13,12 @@ This page provides practical examples and recipes for using OnboardJS in your Re
 ## 1. Basic Linear Onboarding Flow
 
 ```tsx
-import { OnboardingProvider, useOnboarding } from '@onboardjs/react'
+import { type OnboardingStep, OnboardingProvider, useOnboarding } from '@onboardjs/react'
 
-const steps = [
+// Define the onboarding steps
+const steps: OnboardingStep[] = [
   {
     id: 'welcome',
-    type: 'INFORMATION',
     payload: { title: 'Welcome!' },
     nextStep: 'profile',
   },
@@ -31,11 +31,12 @@ const steps = [
     },
     nextStep: 'done',
   },
-  { id: 'done', type: 'INFORMATION', payload: { title: 'All set!' } },
+  { id: 'done', payload: { title: 'All set!' }, nextStep: null },
 ]
 
 const componentRegistry = {
-  INFORMATION: ({ payload }) => <div>{payload.title}</div>,
+  welcome: ({ payload }) => <div>{payload.title}</div>,
+  done: ({ payload }) => <div>{payload.title}</div>,
   SINGLE_CHOICE: ({ payload, next }) => (
     <div>
       <h2>{payload.question}</h2>
@@ -49,26 +50,18 @@ const componentRegistry = {
 }
 
 function OnboardingUI() {
-  const { currentStep, state, next, previous } = useOnboarding()
+  const { currentStep, state, next, previous, renderStep } = useOnboarding()
 
   if (state.isCompleted) return <div>Onboarding complete!</div>
 
-  const Component =
-    componentRegistry[currentStep.payload.componentKey ?? currentStep.type] ||
-    (() => <div>Unknown step type</div>)
-
   return (
     <div>
-      <Component
-        payload={currentStep.payload}
-        coreContext={state.context}
-        onDataChange={() => {}}
-      />
+      {renderStep()}
       <div>
-        <button onClick={previous} disabled={!state.canGoPrevious}>
+        <button onClick={() => previous()} disabled={!state.canGoPrevious}>
           Back
         </button>
-        <button onClick={next} disabled={!state.canGoNext}>
+        <button onClick={() => next()} disabled={!state.canGoNext}>
           Next
         </button>
       </div>
@@ -78,7 +71,7 @@ function OnboardingUI() {
 
 export default function App() {
   return (
-    <OnboardingProvider steps={steps}>
+    <OnboardingProvider steps={steps} componentRegistry={componentRegistry}>
       <OnboardingUI />
     </OnboardingProvider>
   )
@@ -109,7 +102,7 @@ const steps = [
       ],
     },
     nextStep: (context) =>
-      context.answers?.isDeveloper ? 'dev-setup' : 'user-setup',
+      context.flowData.answers?.isDeveloper ? 'dev-setup' : 'user-setup',
   },
   {
     id: 'dev-setup',
@@ -135,9 +128,8 @@ const steps = [
 function CustomSurveyStep({ step, payload, next, updateContext }) {
   const [answer, setAnswer] = React.useState('')
 
-  const handleSubmit = async () => {
-    await updateContext({ survey: answer })
-    await next()
+  const handleSubmit = () => {
+    updateContext({ flowData: { survey: answer } })
   }
 
   return (
@@ -149,12 +141,18 @@ function CustomSurveyStep({ step, payload, next, updateContext }) {
   )
 }
 
+const steps: OnboardingStep[] = [
+  {
+    id: 'custom-survey',
+  },
+]
+
 const componentRegistry = {
-  CUSTOM_SURVEY: CustomSurveyStep,
+  'custom-component': CustomSurveyStep,
   // ...other mappings
 }
 
-<OnboardingProvider steps={steps}>
+<OnboardingProvider steps={steps} componentRegistry={componentRegistry}>
   {/** Render the onboarding UI with custom components like above */}
   <OnboardingUI />
 </OnboardingProvider>
@@ -178,7 +176,7 @@ const componentRegistry = {
 
 ---
 
-## 5. Integrating with Supabase or Neon
+## 5. Integrating remote data sources
 
 ```tsx
 <OnboardingProvider
@@ -255,11 +253,11 @@ function CustomNav() {
 
   return (
     <div>
-      <button onClick={previous} disabled={!state.canGoPrevious}>
+      <button onClick={() => previous()} disabled={!state.canGoPrevious}>
         Back
       </button>
-      {state.isSkippable && <button onClick={skip}>Skip</button>}
-      <button onClick={next} disabled={!state.canGoNext}>
+      {state.isSkippable && <button onClick={() => skip()}>Skip</button>}
+      <button onClick={() => next()} disabled={!state.canGoNext}>
         Next
       </button>
     </div>
