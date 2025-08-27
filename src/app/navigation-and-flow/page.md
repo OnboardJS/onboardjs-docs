@@ -62,9 +62,8 @@ You can use functions for `nextStep`, `previousStep`, `skipToStep`, and conditio
 ```tsx
 {
   id: 'profile',
-  type: 'CUSTOM_COMPONENT',
   nextStep: (context) => {
-    if (context.answers.isDeveloper) return 'dev-setup';
+    if (context.flowData.answers.isDeveloper) return 'dev-setup';
     return 'user-setup';
   },
   condition: (context) => context.currentUser != null,
@@ -83,7 +82,7 @@ You can control navigation from your application code, for example in response t
 const { next, goToStep, updateContext } = useOnboarding();
 
 const handleSubmit = async (formData) => {
-  await updateContext({ answers: { ...formData } });
+  await someAPICall();
   await next();
 };
 ```
@@ -99,7 +98,6 @@ const handleSubmit = async (formData) => {
 ```tsx
 {
   id: 'optional-survey',
-  type: 'CUSTOM_COMPONENT',
   isSkippable: true,
   skipToStep: 'final-step',
 }
@@ -127,9 +125,9 @@ const handleSubmit = async (formData) => {
 
 ```tsx
 const steps = [
-  { id: 'welcome', type: 'INFORMATION', nextStep: 'profile' },
-  { id: 'profile', type: 'SINGLE_CHOICE', nextStep: 'summary' },
-  { id: 'summary', type: 'INFORMATION' },
+  { id: 'welcome', nextStep: 'profile' },
+  { id: 'profile', nextStep: 'summary' },
+  { id: 'summary', nextStep: null },
 ];
 ```
 
@@ -137,16 +135,16 @@ const steps = [
 
 ```tsx
 const steps = [
-  { id: 'welcome', type: 'INFORMATION', nextStep: 'profile' },
+  { id: 'welcome', nextStep: 'profile' },
   {
     id: 'profile',
     type: 'SINGLE_CHOICE',
     nextStep: (context) =>
       context.answers.role === 'admin' ? 'admin-setup' : 'user-setup',
   },
-  { id: 'admin-setup', type: 'CUSTOM_COMPONENT', nextStep: 'summary' },
-  { id: 'user-setup', type: 'CUSTOM_COMPONENT', nextStep: 'summary' },
-  { id: 'summary', type: 'INFORMATION' },
+  { id: 'admin-setup', nextStep: 'summary' },
+  { id: 'user-setup', nextStep: 'summary' },
+  { id: 'summary', nextStep: null },
 ];
 ```
 

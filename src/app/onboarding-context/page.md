@@ -67,17 +67,27 @@ Then, use this type in your onboarding config and steps for better type safety.
 
 ## How is the Context Updated?
 
-You can update the context at any time using the engine's API:
+You can update the context at any time using the engine's API.
 
-```tsx
-await engine.updateContext({ preferences: { theme: 'light' } })
+```typescript
+await engine.updateContext({ flowData: { preferences: { theme: 'light' } } })
+```
+
+**Updating the flow data** is additive, meaning you can specify only the new data you want to merge into the existing context and the previous values will be preserved.
+
+```typescript
+await engine.updateContext({ flowData: { answers: { q1: 'foo' } } })
+await engine.updateContext({ flowData: { answers: { q2: 'bar' } } }) // This WILL NOT overwrite q1
+
+await engine.updateContext({ flowData: { preferences: { theme: 'light' } } })
+await engine.updateContext({ flowData: { preferences: { theme: 'dark' } } }) // This WILL overwrite the previous value of `theme`
 ```
 
 Or in React:
 
 ```tsx
 const { updateContext } = useOnboarding()
-updateContext({ answers: { q1: 'yes' } })
+updateContext({ flowData: { answers: { q1: 'yes' } } })
 ```
 
 ---
@@ -95,7 +105,7 @@ From React:
 
 ```tsx
 const { state } = useOnboarding()
-;<div>Welcome, {state.context.currentUser.name}!</div>
+<div>Welcome, {state.context.currentUser.name}!</div>
 ```
 
 ## Using Context in Step Logic
@@ -142,4 +152,5 @@ OnboardJS manages some internal state in `flowData._internal` (like completed st
 
 ---
 
-**Next:** [Learn about Navigation & Flow Control](/navigation-and-flow)
+**Next:**
+- [Learn about Navigation & Flow Control](/navigation-and-flow)

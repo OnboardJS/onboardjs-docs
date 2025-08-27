@@ -112,7 +112,7 @@ function MyCustomComponent({
   const { updateContext, next } = useOnboarding()
 
   const handleSubmit = async () => {
-    await updateContext({ answers: { ...payload.answers, custom: true } })
+    await updateContext({ flowData: { answers: { custom: true } } })
     next()
   }
 

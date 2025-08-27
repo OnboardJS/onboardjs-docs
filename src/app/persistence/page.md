@@ -79,11 +79,11 @@ The React SDK makes persistence even easier with the `localStoragePersistence` p
 
 ### Custom Persistence Handlers
 
-You can provide your own persistence logic using these props:
+You can provide your own persistence logic using these props. This is useful for integrating with custom backends and storing your onboarding state in a remote database.
 
-- `customOnDataLoad?: () => Promise<TContext> \| TContext`
-- `customOnDataPersist?: (context: TContext) => Promise<void> \| void`
-- `customOnClearPersistedData?: () => Promise<void> \| void`
+- `customOnDataLoad?: () => Promise<TContext> | TContext`
+- `customOnDataPersist?: (context: TContext) => Promise<void> | void`
+- `customOnClearPersistedData?: () => Promise<void> | void`
 
 **Example: Persisting to Supabase**
 
