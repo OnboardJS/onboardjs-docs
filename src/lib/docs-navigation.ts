@@ -13,7 +13,11 @@ export const navigation = [
       { title: 'Onboarding config', href: '/onboarding-config' },
       {
         title: 'Defining steps',
-        href: '/defining-steps',
+        href: '/steps/defining-steps',
+      },
+      {
+        title: 'Typed steps',
+        href: '/steps/typed-steps',
       },
       { title: 'Onboarding Context', href: '/onboarding-context' },
       {

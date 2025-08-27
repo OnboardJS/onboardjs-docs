@@ -173,7 +173,7 @@ if (state.isLastStep) {
 - Use engine methods or React hook actions for programmatic control.
 - Always check navigation state to guide UI and user experience.
 
-For more, see [Defining Steps](/defining-steps) and [Event System](/event-system).
+For more, see [Defining Steps](/steps/defining-steps) and [Event System](/event-system).
 
 ## API Reference
 
