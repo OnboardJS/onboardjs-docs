@@ -3,7 +3,7 @@ title: OnboardJS UI
 nextjs:
   metadata:
     title: OnboardJS UI
-    description: Ready-to-use OnboardJS components built with shadcn/ui components and Tailwind CSS.
+    description: Streamline your onboarding with OnboardJS UI - Pre-built components powered by shadcn/ui and Tailwind CSS. Ideal for quick MVPs and new projects—copy, paste, and deploy effortlessly. Get started after easy setup with shadcn init.
 ---
 
 Ready-to-use OnboardJS components built with [shadcn/ui](https://ui.shadcn.com/) components and [Tailwind CSS](https://tailwindcss.com/). Useful for new projects, MVPs, or when you need to get up and running quickly.

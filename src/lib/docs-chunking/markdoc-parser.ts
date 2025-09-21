@@ -220,14 +220,11 @@ export async function readAndChunkMarkdocDocs(
     }
 
     // Determine the relative URL path for the document.
-    // Handles /page.md, /index.md, and other .md files.
+    // Handles /page.md and other .md files.
     let relativeUrlPath = file.replace(/\.md$/, '')
     if (relativeUrlPath.endsWith('/page')) {
       relativeUrlPath = relativeUrlPath.slice(0, -5) // Remove '/page'
-    } else if (relativeUrlPath.endsWith('/index')) {
-      relativeUrlPath = relativeUrlPath.slice(0, -6) // Remove '/index'
     }
-    relativeUrlPath = relativeUrlPath.replace(/^index$/, '') // Handle root index.md becoming ''
     if (!relativeUrlPath.startsWith('/') && relativeUrlPath !== '') {
       relativeUrlPath = `/${relativeUrlPath}`
     }

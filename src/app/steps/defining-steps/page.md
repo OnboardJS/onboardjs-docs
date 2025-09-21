@@ -10,61 +10,65 @@ Steps are the building blocks of your onboarding flow in OnboardJS. Each step re
 
 ---
 
-## Basic Step Structure
+## How to define Onboarding Steps
 
 Here’s what a typical step looks like:
 
 ```tsx
+import { OnboardingStep } from '@onboardjs/core'
+
 const step: OnboardingStep = {
-  id: "welcome", // Unique identifier for this step
+  id: 'welcome', // Unique identifier for this step
   payload: {
-    title: "Welcome!",
+    title: 'Welcome!',
     mainText: "Let's get started.",
-    ctaButtonText: "Next",
+    ctaButtonText: 'Next',
   },
-  nextStep: "profile", // (Optional) The id of the next step
-  previousStep: null,  // (Optional) The id of the previous step
-};
+  nextStep: 'profile', // (Optional) The id of the next step
+  previousStep: null, // (Optional) The id of the previous step
+}
 ```
 
-## Example: Minimal Steps Array
+## Defining multiple steps
 
 ```tsx
+import { OnboardingStep } from '@onboardjs/core'
+
 const steps: OnboardingStep[] = [
   {
-    id: "welcome",
+    id: 'welcome',
     payload: {
-      title: "Welcome to the App!",
+      title: 'Welcome to the App!',
       mainText: "Let's get you set up.",
-      ctaButtonText: "Start",
+      ctaButtonText: 'Start',
     },
-    nextStep: "choose-role",
+    nextStep: 'choose-role',
   },
   {
-    id: "choose-role",
-    type: "SINGLE_CHOICE",
+    id: 'choose-role',
+    type: 'SINGLE_CHOICE',
     payload: {
-      question: "What is your role?",
-      dataKey: "userRole",
+      question: 'What is your role?',
+      dataKey: 'userRole',
       options: [
-        { id: "dev", label: "Developer", value: "developer" },
-        { id: "designer", label: "Designer", value: "designer" },
+        { id: 'dev', label: 'Developer', value: 'developer' },
+        { id: 'designer', label: 'Designer', value: 'designer' },
       ],
     },
-    nextStep: "finish",
-    previousStep: "welcome",
+    nextStep: 'finish',
+    previousStep: 'welcome',
   },
   {
-    id: "finish",
+    id: 'finish',
     payload: {
       title: "You're all set!",
-      mainText: "Enjoy using the app.",
-      ctaButtonText: "Done",
+      mainText: 'Enjoy using the app.',
+      ctaButtonText: 'Done',
     },
-    previousStep: "choose-role",
+    previousStep: 'choose-role',
     nextStep: null, // End of flow
   },
-];
+]
 ```
 
 ## Advanced Step Features
@@ -106,6 +110,8 @@ Use the `condition` property to show or skip a step based on the context:
 - **Use `condition` for personalization**: Show or skip steps based on previous answers.
 
 ---
+
 **Next:**
+
 - [Learn about step types](/steps/typed-steps)
 - [Learn about the Onboarding Context & `flowData`](/onboarding-context)
