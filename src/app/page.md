@@ -41,45 +41,34 @@ The heart of OnboardJS is its configuration, where you define the steps of your 
 Create a file for your onboarding configuration, for example, `src/lib/onboarding-config.ts`:
 
 ```tsx
-import { OnboardingEngineConfig, OnboardingStep } from '@onboardjs/core'
+import { OnboardingStep } from '@onboardjs/react'
 
 // Define your steps
 export const steps: OnboardingStep[] = [
   {
     id: 'welcome',
-    type: 'INFORMATION', // A simple informational step
+    component: WelcomeStep,
     payload: {
       title: 'Welcome to Our App!',
     },
   },
   {
     id: 'profile-details',
-    type: 'CUSTOM_COMPONENT', // A step that renders your own React component
+    component: ProfileSetupStep, // A React component you create
     payload: {
-      componentKey: 'ProfileSetupForm', // A key to identify which custom component to render
       title: 'Complete Your Profile',
     },
     nextStep: 'finish', // You can specify the next step by ID
   },
   {
     id: 'finish',
-    type: 'INFORMATION',
+    component: FinishStep,
     payload: {
       title: 'Setup Complete!',
     },
     nextStep: null, // null indicates the end of the flow
   },
 ]
-
-// Define your Component Registry
-export const componentRegistry = {
-  // Map every INFORMATION step to a simple informational component
-  INFORMATION: InformationStepComponent,
-  // Map CUSTOM_COMPONENT based on the componentKey
-  ProfileSetupForm: ProfileSetupFormComponent,
-  // Override the default INFORMATION component by providing the ID instead
-  finish: FinishStepComponent,
-}
 ```
 
 {% callout title="You should know!" %}
@@ -98,27 +87,14 @@ Wrap your application (or the relevant part of it) with the `OnboardingProvider`
 
 ```tsx
 // src/App.tsx or your main application file
-import React from 'react'
 import { OnboardingProvider } from '@onboardjs/react'
-import { steps, componentRegistry } from './onboarding-config' // Your config from the previous step
-import YourMainAppComponent from './YourMainAppComponent' // Your actual app content
+import { steps } from './onboarding-config' // Your config from the previous step
+import OnboardingUI from './onboarding-ui' // Your actual app content
 
 function App() {
   return (
-    <OnboardingProvider
-      steps={steps}
-      componentRegistry={componentRegistry}
-      onFlowComplete={(context) => {
-        console.log('Onboarding flow completed!', context)
-        // Perform actions like redirecting the user, setting a flag, etc.
-      }}
-      onStepChange={(newStep, oldStep, context) => {
-        console.log('Step changed:', oldStep?.id, '->', newStep?.id)
-      }}
-      // Optional: Enable localStorage persistence
-      localStoragePersistence={{ key: 'myAppOnboardingState' }}
-    >
-      <YourMainAppComponent />
+    <OnboardingProvider steps={steps}>
+      <OnboardingUI />
     </OnboardingProvider>
   )
 }
@@ -148,20 +124,20 @@ type TypedPayload = {
 
 // Props will include the current step and its payload
 const ProfileSetupFormComponent: React.FC<StepComponentProps<TypedPayload>> = ({
-  // step, // The current step object
+  context, // The current onboarding context
   payload,
 }) => {
   const { next, updateContext } = useOnboarding()
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     // Simulate form submission
-    await updateContext({ flowData: { profileComplete: true } })
-    await next() // Proceed to the next step
+    updateContext({ flowData: { profileComplete: true } })
+    next() // Proceed to the next step
   }
 
   return (
     <div>
-      <h2>{payload?.title || 'Profile Setup'}</h2>
+      <h2>{payload?.title}</h2>
       <p>Please fill in your details...</p>
       {/* Your form fields here */}
       <button onClick={handleSubmit}>Save and Continue</button>
@@ -178,19 +154,19 @@ Now, you can create a component that renders the current step based on the onboa
 
 ```tsx
 // src/components/onboarding/OnboardingFlow.tsx
-import React from 'react'
 import { useOnboarding } from '@onboardjs/react'
 
-// Define your component registry
-// This maps step types or componentKeys to your React components
-const componentRegistry = {
-  ProfileSetupForm: React.lazy(() => import('./ProfileSetupFormComponent')),
-  // Add more components as needed
-}
-
-export const OnboardingFlowPresenter: React.FC = () => {
-  const { currentStep, state, isLoading, isCompleted, next, previous, skip, renderStep } =
-    useOnboarding()
+export const OnboardingUI = () => {
+  const {
+    currentStep,
+    state,
+    isLoading,
+    isCompleted,
+    next,
+    previous,
+    skip,
+    renderStep,
+  } = useOnboarding()
 
   if (!state) {
     // The state is not initialized yet, possibly loading from localStorage or your data source
@@ -223,11 +199,13 @@ export const OnboardingFlowPresenter: React.FC = () => {
         {/* The primary action button often comes from the step's payload or is 'Next' */}
 
         <button onClick={() => next()}>
-          {currentStep.payload.ctaButtonText ?? "Next"}
+          {currentStep.payload.ctaButtonText ?? 'Next'}
         </button>
       </div>
       {/* Optional: Display progress */}
-      <div>Step {state.currentStepNumber} of {state.totalSteps}</div>
+      <div>
+        Step {state.currentStepNumber} of {state.totalSteps}
+      </div>
     </div>
   )
 }
@@ -235,47 +213,19 @@ export const OnboardingFlowPresenter: React.FC = () => {
 
 ---
 
-### Using the Onboarding UI
-
-Now, include your `OnboardingFlowPresenter` (or similar UI component) in your application where you want the onboarding to appear. This could be a modal, a dedicated page, or embedded within a section.
-```tsx
-// src/YourMainAppComponent.tsx
-import React from "react";
-import { OnboardingFlowPresenter } from "./components/OnboardingFlowPresenter";
-import { useOnboarding } from "@onboardjs/react"; // To potentially hide presenter when completed
-
-const YourMainAppComponent = () => {
-  const { isCompleted } = useOnboarding(); // Get completion state
-
-  return (
-    <div>
-      <h1>My Awesome Application</h1>
-      {/* Conditionally render the onboarding flow */}
-      {!isCompleted && <OnboardingFlowPresenter />}
-      
-      <p>Rest of your application content...</p>
-      {/* Example: Show a button to reset onboarding for testing */}
-    </div>
-  );
-};
-
-export default YourMainAppComponent;
-```
-
 ## Key Concepts Recap
 
-*   **`OnboardingEngineConfig<TContext>`**: Defines your steps, initial state, and callbacks.
-*   **`OnboardingStep<TContext>`**: Represents a single screen/interaction in your flow. Key properties: `id`, `type`, `payload`, `next`, `previous`, `condition`.
-*   **`OnboardingProvider`**: Initializes the engine and provides context to your app.
-*   **`useOnboarding()` Hook**: Accesses the engine's state (`currentStep`, `isLoading`, `isCompleted`, etc.) and actions (`next`, `previous`, `reset`, etc.).
+- **`OnboardingStep<TContext>`**: Represents a single screen/interaction in your flow. Key properties: `id`, `type`, `payload`, `next`, `previous`, `condition`.
+- **`OnboardingProvider`**: Initializes the engine and provides context to your app.
+- **`useOnboarding()` Hook**: Accesses the engine's state (`currentStep`, `isLoading`, `isCompleted`, etc.) and actions (`next`, `previous`, `reset`, etc.).
 
 ## Next Steps
 
-*   **Explore Step Types**: OnboardJS supports various step types like `INFORMATION`, `SINGLE_CHOICE`, `MULTIPLE_CHOICE`, `CHECKLIST`, `FORM_STEP`, and `CUSTOM_COMPONENT`.
-*   **Conditional Logic**: Use the `condition` property on steps to show/hide them based on the current `context.flowData`.
-*   **Dynamic Navigation**: Use functions for `next` or `previous` for complex routing.
-*   **Persistence**: Implement `customOnDataLoad` and `customOnDataPersist` for backend storage if `localStoragePersistence` isn't sufficient.
-*   **Plugins**: Extend functionality with plugins or create your own.
-*   **Styling**: Style your onboarding components to match your application's look and feel.
+- **Explore Step Types**: OnboardJS supports various step types like `INFORMATION`, `SINGLE_CHOICE`, `MULTIPLE_CHOICE`, `CHECKLIST`, `FORM_STEP`, and `CUSTOM_COMPONENT`.
+- **Conditional Logic**: Use the `condition` property on steps to show/hide them based on the current `context.flowData`.
+- **Dynamic Navigation**: Use functions for `next` or `previous` for complex routing.
+- **Persistence**: Implement `customOnDataLoad` and `customOnDataPersist` for backend storage if `localStoragePersistence` isn't sufficient.
+- **Plugins**: Extend functionality with plugins or create your own.
+- **Styling**: Style your onboarding components to match your application's look and feel.
 
 This quickstart should give you a solid foundation. Dive into the more detailed documentation for advanced features and customization!
