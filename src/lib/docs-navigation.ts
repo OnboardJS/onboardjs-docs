@@ -76,7 +76,12 @@ export const navigation = [
     title: 'Demos',
     links: [
       {
-        title: 'Default',
+        title: 'Linear.app Demo',
+        href: 'https://vite.onboardjs.com',
+        target: '_blank',
+      },
+      {
+        title: 'Basic Demo',
         href: 'https://demo.onboardjs.com',
         target: '_blank',
       },

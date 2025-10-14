@@ -77,6 +77,7 @@ onboardjs-docs/
 The documentation is organized into several main sections:
 
 ### Core Documentation
+
 - **Installation**: Getting started with OnboardJS
 - **What is OnboardJS**: Core concepts and architecture
 - **Defining Steps**: How to create onboarding steps
@@ -86,15 +87,18 @@ The documentation is organized into several main sections:
 - **Persistence**: State persistence options
 
 ### Framework Integration
+
 - **React**: Using OnboardJS with React applications
 - **Next.js**: Integration with Next.js projects
 
 ### Plugins
+
 - **PostHog**: Analytics integration
 - **Supabase**: Database persistence
 - **Mixpanel**: Event tracking
 
 ### UI Components
+
 - Ready-to-use components built with shadcn/ui
 
 ## 🎨 Design System
@@ -109,6 +113,7 @@ The documentation uses a custom design system built on Tailwind CSS with:
 ## 🧩 Key Features
 
 ### Markdoc Integration
+
 The site uses Markdoc for content authoring with custom tags:
 
 ```markdoc
@@ -122,6 +127,7 @@ This is a callout component for highlighting important information.
 ```
 
 ### Interactive Examples
+
 Code examples are syntax-highlighted and interactive:
 
 ```tsx
@@ -136,6 +142,7 @@ function WelcomeStep() {
 ```
 
 ### Responsive Design
+
 Fully responsive design that works on desktop, tablet, and mobile devices.
 
 ## 🚀 Deployment
@@ -164,6 +171,7 @@ npm run lint
 We welcome contributions to improve the documentation! Here's how you can help:
 
 ### Content Contributions
+
 1. Fork the repository
 2. Create a new branch: `git checkout -b improve-docs`
 3. Make your changes to the Markdoc files in `src/app/`
@@ -171,12 +179,14 @@ We welcome contributions to improve the documentation! Here's how you can help:
 5. Submit a pull request
 
 ### Code Contributions
+
 1. Follow the existing code style and patterns
 2. Ensure TypeScript types are properly defined
 3. Test your changes thoroughly
 4. Update documentation if needed
 
 ### Reporting Issues
+
 - Use the [GitHub Issues](https://github.com/Somafet/onboardjs/issues) to report bugs
 - Provide clear reproduction steps
 - Include browser and Node.js version information
@@ -189,8 +199,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Main Library**: [OnboardJS GitHub Repository](https://github.com/Somafet/onboardjs)
 - **Live Documentation**: [onboardjs.com](https://docs.onboardjs.com)
-- **Live Demos**: 
-  - [Default Demo](https://demo.onboardjs.com)
+- **Live Demos**:
+  - [Animated Linear.app's Demo](https://vite.onboardjs.com)
+  - [Basic Demo](https://demo.onboardjs.com)
   - [Basecoat Demo](https://basecoat.onboardjs.com)
 - **Discord Community**: [discord.onboardjs.com](https://discord.onboardjs.com)
 
