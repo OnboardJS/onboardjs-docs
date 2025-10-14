@@ -38,35 +38,41 @@ The `@onboardjs/react` package provides seamless integration of OnboardJS into R
 
 1. **Wrap your app (or a section) with `OnboardingProvider`:**
 
-    ```tsx
-    import { OnboardingProvider } from '@onboardjs/react';
-
-    <OnboardingProvider steps={steps} localStoragePersistence={{ key: 'onboardjs:my-flow' }}>
-      <App />
-    </OnboardingProvider>
-    ```
+   ```tsx
+   import { OnboardingProvider } from '@onboardjs/react'
+   ;<OnboardingProvider
+     steps={steps}
+     localStoragePersistence={{ key: 'onboardjs:my-flow' }}
+   >
+     <App />
+   </OnboardingProvider>
+   ```
 
 2. **Use the `useOnboarding` hook to access onboarding state and actions:**
 
-    ```tsx
-    import { useOnboarding } from '@onboardjs/react';
+   ```tsx
+   import { useOnboarding } from '@onboardjs/react'
 
-    function OnboardingStep() {
-      const { state, currentStep, next, previous } = useOnboarding();
+   function OnboardingStep() {
+     const { state, currentStep, next, previous } = useOnboarding()
 
-      if (state.isCompleted) return <div>Onboarding complete!</div>;
+     if (state.isCompleted) return <div>Onboarding complete!</div>
 
-      const Component = yourStepComponents[currentStep.id];
+     const Component = yourStepComponents[currentStep.id]
 
-      return (
-        <div>
-          {Component}
-          <button onClick={previous} disabled={!state.canGoPrevious}>Back</button>
-          <button onClick={next} disabled={!state.canGoNext}>Next</button>
-        </div>
-      );
-    }
-    ```
+     return (
+       <div>
+         {Component}
+         <button onClick={previous} disabled={!state.canGoPrevious}>
+           Back
+         </button>
+         <button onClick={next} disabled={!state.canGoNext}>
+           Next
+         </button>
+       </div>
+     )
+   }
+   ```
 
 ---
 
@@ -81,8 +87,8 @@ The `@onboardjs/react` package provides seamless integration of OnboardJS into R
 
 ## What’s Next
 
-- [OnboardingProvider](/onboarding-provider): How to configure and use the provider.
-- [useOnboarding Hook](/react/use-onboarding): Accessing state and actions in your components.
+- [OnboardingProvider](/react/onboarding-provider): How to configure and use the provider.
+- [useOnboarding Hook](/react/use-onboarding-hook): Accessing state and actions in your components.
 - [Rendering Step Content](/react/render-step-content): Customizing how steps are displayed.
 - [Examples & Recipes](/react/examples): Practical usage patterns.
 

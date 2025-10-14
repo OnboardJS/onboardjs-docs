@@ -166,4 +166,4 @@ export default function OnboardingUI() {
 - Step components receive full context and payloads as props.
 - Customize your onboarding UI freely—OnboardJS handles the logic, you handle the presentation.
 
-For more, see [useOnboarding Hook](/react/use-onboarding) and [Examples & Recipes](/react/examples).
+For more, see [useOnboarding Hook](/react/use-onboarding-hook) and [Examples & Recipes](/react/examples).
