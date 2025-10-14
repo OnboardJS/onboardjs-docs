@@ -42,16 +42,18 @@ export default function MultiStepPage() {
         <p className="text-muted-foreground">
           This is a full code example of a multi-step onboarding flow using
           OnboardJS. It includes two steps:
-          <ul className="list-disc pl-5 my-4">
-            <li>
-              <strong>First Step:</strong> A welcome screen with a button to
-              start the onboarding experience.
-            </li>
-            <li>
-              <strong>Second Step:</strong> A persona selection step where users
-              can choose their role and provide additional information.
-            </li>
-          </ul>
+        </p>
+        <ul className="my-4 list-disc pl-5">
+          <li>
+            <strong>First Step:</strong> A welcome screen with a button to start
+            the onboarding experience.
+          </li>
+          <li>
+            <strong>Second Step:</strong> A persona selection step where users
+            can choose their role and provide additional information.
+          </li>
+        </ul>
+        <p>
           The example demonstrates how to use the <code>useOnboarding</code>{' '}
           hook to manage the onboarding state and navigate between steps.
         </p>
