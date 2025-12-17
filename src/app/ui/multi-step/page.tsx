@@ -3,34 +3,22 @@
 import ComponentPreview from '@/components/component-preview/component-preview'
 import { Deps } from '@/components/component-preview/deps'
 import MultiStepOnboarding from '@/components/examples/multi-step/multi-step-onboarding'
-import {
-  OnboardingProvider,
-  type StepComponentRegistry,
-} from '@onboardjs/react'
-import dynamic from 'next/dynamic'
+import { OnboardingProvider, type OnboardingStep } from '@onboardjs/react'
 
-const FirstStep = dynamic(
-  () => import('@/components/examples/multi-step/first-step'),
-)
+import FirstStep from '@/components/examples/multi-step/first-step'
+import SecondStep from '@/components/examples/multi-step/second-step'
 
-const SecondStep = dynamic(
-  () => import('@/components/examples/multi-step/second-step'),
-)
-
-const steps = [
+const steps: OnboardingStep[] = [
   {
     id: 'step1',
+    component: FirstStep,
   },
   {
     id: 'step2',
-    nextStepId: null,
+    component: SecondStep,
+    nextStep: null,
   },
 ]
-
-const registry: StepComponentRegistry = {
-  step1: FirstStep,
-  step2: SecondStep,
-}
 
 export default function MultiStepPage() {
   return (
@@ -68,7 +56,7 @@ export default function MultiStepPage() {
 
       <ComponentPreview
         component={
-          <OnboardingProvider steps={steps} componentRegistry={registry}>
+          <OnboardingProvider steps={steps}>
             <MultiStepOnboarding />
           </OnboardingProvider>
         }
