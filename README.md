@@ -135,7 +135,7 @@ function WelcomeStep() {
   const { next } = useOnboarding()
   return (
     <div>
-      <button onClick={next}>Next</button>
+      <button onClick={() => next()}>Next</button>
     </div>
   )
 }

@@ -1,12 +1,13 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
+import { cn } from '@/utils/utils'
 import { randomWords } from '@/utils/words'
 import clsx from 'clsx'
 import { CheckIcon, CopyIcon } from 'lucide-react'
 import posthog from 'posthog-js'
 import { Highlight } from 'prism-react-renderer'
 import { Fragment, useEffect, useMemo, useState } from 'react'
-import { Button } from '@/components/button'
 
 export function Fence({
   children = '',
@@ -143,12 +144,15 @@ export function Fence({
               </div>
             </div>
 
-            <pre style={{ ...style, margin: 0 }} className={bodyClassName}>
+            <pre
+              style={{ ...style, margin: 0 }}
+              className={cn(bodyClassName, 'rounded-md! rounded-t-none!')}
+            >
               <code className="text-wrap">
                 {tokens.map((line, lineIndex) => (
                   <Fragment key={lineIndex}>
                     {showLineNumbers && (
-                      <span className="mr-4 w-8 flex-shrink-0 text-right text-gray-400 select-none">
+                      <span className="mr-4 w-8 flex-shrink-0 select-none text-right text-gray-400">
                         {lineIndex + 1}
                       </span>
                     )}

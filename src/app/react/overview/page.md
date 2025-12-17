@@ -66,7 +66,7 @@ The `@onboardjs/react` package provides seamless integration of OnboardJS into R
          <button onClick={previous} disabled={!state.canGoPrevious}>
            Back
          </button>
-         <button onClick={next} disabled={!state.canGoNext}>
+         <button onClick={() => next()} disabled={!state.canGoNext}>
            Next
          </button>
        </div>

@@ -52,45 +52,45 @@ The App Router uses React Server Components by default, but OnboardJS should be 
 
 2. **Create a client onboarding UI component**:
 
-    ```tsx
-    // app/onboarding/OnboardingUI.tsx
-    'use client'
+   ```tsx
+   // app/onboarding/OnboardingUI.tsx
+   'use client'
 
-    import { useOnboarding } from '@onboardjs/react'
+   import { useOnboarding } from '@onboardjs/react'
 
-    export function OnboardingUI() {
-      const { currentStep, state, next, previous } = useOnboarding()
+   export function OnboardingUI() {
+     const { currentStep, state, next, previous } = useOnboarding()
 
-      if (state.isCompleted) return <div>Onboarding complete!</div>
+     if (state.isCompleted) return <div>Onboarding complete!</div>
 
-      const Component =
-        yourComponentRegistry[
-          currentStep.payload.componentKey ?? currentStep.type ?? currentStep.id
-        ]
+     const Component =
+       yourComponentRegistry[
+         currentStep.payload.componentKey ?? currentStep.type ?? currentStep.id
+       ]
 
-      if (!Component) {
-        return <div>Unknown step</div>
-      }
+     if (!Component) {
+       return <div>Unknown step</div>
+     }
 
-      return (
-        <div>
-          <Component
-            payload={currentStep.payload}
-            coreContext={state.context}
-            onDataChange={() => {}}
-          />
-          <div>
-            <button onClick={previous} disabled={!state.canGoPrevious}>
-              Back
-            </button>
-            <button onClick={next} disabled={!state.canGoNext}>
-              Next
-            </button>
-          </div>
-        </div>
-      )
-    }
-    ```
+     return (
+       <div>
+         <Component
+           payload={currentStep.payload}
+           coreContext={state.context}
+           onDataChange={() => {}}
+         />
+         <div>
+           <button onClick={previous} disabled={!state.canGoPrevious}>
+             Back
+           </button>
+           <button onClick={() => next()} disabled={!state.canGoNext}>
+             Next
+           </button>
+         </div>
+       </div>
+     )
+   }
+   ```
 
 3. **Wrap your UI with `OnboardingProvider` in a client component**:
 
@@ -153,43 +153,43 @@ The Pages Router uses classic React components and works seamlessly with Onboard
 
 2. **Create your onboarding UI component**:
 
-    ```tsx
-    // pages/onboarding/OnboardingUI.tsx
-    import { useOnboarding } from '@onboardjs/react'
+   ```tsx
+   // pages/onboarding/OnboardingUI.tsx
+   import { useOnboarding } from '@onboardjs/react'
 
-    export function OnboardingUI() {
-      const { currentStep, state, next, previous } = useOnboarding()
+   export function OnboardingUI() {
+     const { currentStep, state, next, previous } = useOnboarding()
 
-      if (state.isCompleted) return <div>Onboarding complete!</div>
+     if (state.isCompleted) return <div>Onboarding complete!</div>
 
-      const Component =
-        yourComponentRegistry[
-          currentStep.payload.componentKey ?? currentStep.type ?? currentStep.id
-        ]
+     const Component =
+       yourComponentRegistry[
+         currentStep.payload.componentKey ?? currentStep.type ?? currentStep.id
+       ]
 
-      if (!Component) {
-        return <div>Unknown step</div>
-      }
+     if (!Component) {
+       return <div>Unknown step</div>
+     }
 
-      return (
-        <div>
-          <Component
-            payload={currentStep.payload}
-            coreContext={state.context}
-            onDataChange={() => {}}
-          />
-          <div>
-            <button onClick={previous} disabled={!state.canGoPrevious}>
-              Back
-            </button>
-            <button onClick={next} disabled={!state.canGoNext}>
-              Next
-            </button>
-          </div>
-        </div>
-      )
-    }
-    ```
+     return (
+       <div>
+         <Component
+           payload={currentStep.payload}
+           coreContext={state.context}
+           onDataChange={() => {}}
+         />
+         <div>
+           <button onClick={previous} disabled={!state.canGoPrevious}>
+             Back
+           </button>
+           <button onClick={() => next()} disabled={!state.canGoNext}>
+             Next
+           </button>
+         </div>
+       </div>
+     )
+   }
+   ```
 
 3. **Wrap your UI with `OnboardingProvider` in your page component**:
 
