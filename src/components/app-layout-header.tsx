@@ -27,10 +27,10 @@ export function Header() {
   return (
     <header
       className={clsx(
-        'sticky top-0 z-50 flex flex-none flex-wrap items-center justify-between bg-white px-4 py-5 shadow-md shadow-slate-900/5 transition duration-500 sm:px-6 lg:px-8 dark:shadow-none',
+        'sticky top-0 z-50 flex flex-none flex-wrap items-center justify-between px-4 py-5 shadow-md shadow-slate-900/5 transition duration-500 sm:px-6 lg:px-8 dark:shadow-none',
         isScrolled
-          ? 'dark:bg-slate-900/95 dark:backdrop-blur-sm dark:[@supports(backdrop-filter:blur(0))]:bg-slate-900/75'
-          : 'dark:bg-transparent',
+          ? 'bg-white/95 backdrop-blur-sm dark:bg-slate-900/95 [@supports(backdrop-filter:blur(0))]:bg-white/75 dark:[@supports(backdrop-filter:blur(0))]:bg-slate-900/75'
+          : 'bg-transparent',
       )}
     >
       <div className="mr-6 flex lg:hidden">

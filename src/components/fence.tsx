@@ -100,13 +100,13 @@ export function Fence({
       language={language}
       theme={{ plain: {}, styles: [] }}
     >
-      {({ className, style, tokens, getTokenProps }) => {
+      {({ tokens, getTokenProps }) => {
         return (
           <div
             data-human-readable-id={humanReadableId}
             className={clsx(
-              className,
-              !plain && 'overflow-x-auto rounded-md bg-[#362d3d]',
+              !plain &&
+                'overflow-x-auto rounded-md bg-slate-100 dark:bg-[#362d3d]',
               componentClassName,
             )}
           >
@@ -116,15 +116,17 @@ export function Fence({
                 plain ? 'p-0' : 'p-2 px-4',
               )}
             >
-              <span className="text-md text-gray-300">{language}</span>
+              <span className="text-md text-slate-600 dark:text-gray-300">
+                {language}
+              </span>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-slate-500 dark:text-gray-400">
                   {tokens.length} lines
                 </span>
 
                 <Button
                   variant="ghost"
-                  className="text-xs text-white dark:text-white"
+                  className="text-xs text-slate-700 dark:text-white"
                   onClick={() => {
                     posthog.capture('copy_code_snippet', {
                       humanReadableId,
@@ -145,14 +147,16 @@ export function Fence({
             </div>
 
             <pre
-              style={{ ...style, margin: 0 }}
-              className={cn(bodyClassName, 'rounded-md! rounded-t-none!')}
+              className={cn(
+                bodyClassName,
+                'my-0! rounded-t-none! rounded-b-md! bg-slate-50 p-4 text-slate-800 dark:bg-slate-900 dark:text-slate-200',
+              )}
             >
               <code className="text-wrap">
                 {tokens.map((line, lineIndex) => (
                   <Fragment key={lineIndex}>
                     {showLineNumbers && (
-                      <span className="mr-4 w-8 flex-shrink-0 select-none text-right text-gray-400">
+                      <span className="mr-4 w-8 shrink-0 select-none text-right text-slate-400 dark:text-gray-400">
                         {lineIndex + 1}
                       </span>
                     )}

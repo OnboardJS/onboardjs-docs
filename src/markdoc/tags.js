@@ -1,5 +1,6 @@
 import { Callout } from '@/components/callout'
 import { QuickLink, QuickLinks } from '@/components/quick-links'
+import { SkillPromoBanner } from '@/components/skill-promo-banner'
 import { SupabaseIcon, PosthogIcon, MixpanelIcon, OnboardJSIcon } from '@/components/icons'
 import { Link } from '@/components/link'
 
@@ -79,6 +80,10 @@ const tags = {
       icon: { type: String },
       href: { type: String },
     },
+  },
+  'skill-promo-banner': {
+    selfClosing: true,
+    render: SkillPromoBanner,
   },
   link: {
     render: Link,

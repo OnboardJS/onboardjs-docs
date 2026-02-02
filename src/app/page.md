@@ -18,6 +18,8 @@ Learn how to get OnboardJS set up in your project in under thirty minutes. {% .l
 
 Welcome to OnboardJS! This guide will help you quickly integrate flexible and powerful onboarding flows into your React application.
 
+{% skill-promo-banner /%}
+
 ---
 
 ## Quick start
@@ -213,18 +215,11 @@ export const OnboardingUI = () => {
 
 ---
 
-## Key Concepts Recap
-
-- **`OnboardingStep<TContext>`**: Represents a single screen/interaction in your flow. Key properties: `id`, `type`, `payload`, `next`, `previous`, `condition`.
-- **`OnboardingProvider`**: Initializes the engine and provides context to your app.
-- **`useOnboarding()` Hook**: Accesses the engine's state (`currentStep`, `isLoading`, `isCompleted`, etc.) and actions (`next`, `previous`, `reset`, etc.).
-
 ## Next Steps
 
-- **Explore Step Types**: OnboardJS supports various step types like `INFORMATION`, `SINGLE_CHOICE`, `MULTIPLE_CHOICE`, `CHECKLIST`, `FORM_STEP`, and `CUSTOM_COMPONENT`.
 - **Conditional Logic**: Use the `condition` property on steps to show/hide them based on the current `context.flowData`.
 - **Dynamic Navigation**: Use functions for `next` or `previous` for complex routing.
-- **Persistence**: Implement `customOnDataLoad` and `customOnDataPersist` for backend storage if `localStoragePersistence` isn't sufficient.
+- **Persistence**: Use `localStoragePersistence` to save user progress across sessions.
 - **Plugins**: Extend functionality with plugins or create your own.
 - **Styling**: Style your onboarding components to match your application's look and feel.
 

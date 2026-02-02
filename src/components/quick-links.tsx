@@ -4,7 +4,7 @@ import { DocsIcon } from '@/components/docs-icon'
 
 export function QuickLinks({ children }: { children: React.ReactNode }) {
   return (
-    <div className="not-prose my-12 grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div className="not-prose grid grid-cols-1 gap-6 sm:grid-cols-2">
       {children}
     </div>
   )

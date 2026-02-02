@@ -1,0 +1,589 @@
+{
+  "onboardingEngineRegistry": {
+    "description": "OnboardingEngineRegistry provides SSR-safe instance management for multiple OnboardingEngine instances. Unlike static module-level registries, this class-based approach prevents cross-instance pollution in multi-tenant/SSR environments and allows explicit lifecycle management.",
+    "methods": [
+      {
+        "name": "register",
+        "signature": "register<TContext>(flowId: string, engine: OnboardingEngine<TContext>): void",
+        "description": "Register an engine instance with a flow ID"
+      },
+      {
+        "name": "unregister",
+        "signature": "unregister(flowId: string): boolean",
+        "description": "Unregister an engine by flow ID"
+      },
+      {
+        "name": "get",
+        "signature": "get<TContext>(flowId: string): OnboardingEngine<TContext> | undefined",
+        "description": "Get an engine by flow ID"
+      },
+      {
+        "name": "has",
+        "signature": "has(flowId: string): boolean",
+        "description": "Check if an engine exists with the given flow ID"
+      },
+      {
+        "name": "getAll",
+        "signature": "getAll(): OnboardingEngine<any>[]",
+        "description": "Get all registered engines"
+      },
+      {
+        "name": "getFlowIds",
+        "signature": "getFlowIds(): string[]",
+        "description": "Get all registered flow IDs"
+      },
+      {
+        "name": "getByVersion",
+        "signature": "getByVersion(versionPattern: string): OnboardingEngine<any>[]",
+        "description": "Get engines matching a version pattern (semver-style matching)"
+      },
+      {
+        "name": "query",
+        "signature": "query(options: RegistryQueryOptions): OnboardingEngine<any>[]",
+        "description": "Get engines matching specific query options (flowName, versionPattern)"
+      },
+      {
+        "name": "getStats",
+        "signature": "getStats(): RegistryStats",
+        "description": "Get registry statistics including totalEngines, enginesByFlow, enginesByVersion"
+      },
+      {
+        "name": "clear",
+        "signature": "clear(): void",
+        "description": "Clear all registered engines"
+      },
+      {
+        "name": "size",
+        "signature": "get size(): number",
+        "description": "Get the number of registered engines"
+      },
+      {
+        "name": "forEach",
+        "signature": "forEach(callback: (engine: OnboardingEngine<any>, flowId: string) => void): void",
+        "description": "Iterate over all engines"
+      },
+      {
+        "name": "getAllFlowInfo",
+        "signature": "getAllFlowInfo(): FlowInfo[]",
+        "description": "Get flow info for all registered engines"
+      }
+    ]
+  },
+  "analyticsTrackers": [
+    {
+      "name": "ActivityTracker",
+      "description": "Monitors idle detection and user activity state",
+      "methods": [
+        "recordActivity()",
+        "recordIdleStart(duration: number)",
+        "recordIdleEnd(awayDuration: number)",
+        "isIdle(): boolean",
+        "getLastActivityTime(): number",
+        "getAwayDuration(): number",
+        "getTimeSinceLastActivity(): number",
+        "shouldBeIdle(): boolean",
+        "reset(): void"
+      ]
+    },
+    {
+      "name": "SessionTracker",
+      "description": "Manages session lifecycle, sessionId generation and tracking, and session-level metadata",
+      "methods": [
+        "getSessionId(): string",
+        "setUserId(userId: string): void",
+        "setFlowId(flowId: string): void",
+        "setFlowInfo(flowInfo: {...}): void",
+        "getFlowInfo(): Readonly<FlowInfo>",
+        "getUserId(): string | undefined",
+        "getFlowId(): string | undefined",
+        "getConfig(): Readonly<AnalyticsConfig>"
+      ]
+    },
+    {
+      "name": "PerformanceTracker",
+      "description": "Tracks render times, navigation times, and slowness detection. Enforces memory limits with LRU eviction to prevent unbounded map growth",
+      "methods": [
+        "recordStepRenderTime(stepId: string | number, renderTime: number): void",
+        "recordNavigationTime(direction: string, duration: number): void",
+        "getStepRenderTime(stepId: string | number): number | undefined",
+        "getNavigationTimes(): ReadonlyMap<string, number>",
+        "getRenderTimeHistory(): number[]",
+        "isSlowRender(renderTime: number): boolean",
+        "isSlowStep(duration: number): boolean",
+        "clear(): void",
+        "getMemoryUsage(): number | undefined",
+        "getConnectionType(): string | undefined"
+      ]
+    },
+    {
+      "name": "ProgressMilestoneTracker",
+      "description": "Tracks milestone achievement and percentage tracking. Manages progress percentage calculation and milestone detection",
+      "methods": [
+        "calculateFlowProgress(completedSteps: number, totalSteps: number): number",
+        "checkForNewMilestones(progress: number): number[]",
+        "hasMilestoneBeenReached(milestone: number): boolean",
+        "getReachedMilestones(): number[]",
+        "getMilestonePercentages(): ReadonlyArray<number>",
+        "reset(): void",
+        "setMilestonePercentages(percentages: number[]): void"
+      ]
+    },
+    {
+      "name": "AnalyticsCoordinator",
+      "description": "Delegates analytics tracking responsibilities to specialized trackers. Coordinates SessionTracker, PerformanceTracker, ActivityTracker, and ProgressMilestoneTracker",
+      "methods": [
+        "registerProvider(provider: AnalyticsProvider): void",
+        "get providerCount(): number",
+        "getSessionId(): string",
+        "setUserId(userId: string): void",
+        "setFlowId(flowId: string): void",
+        "setFlowInfo(flowInfo: {...}): void",
+        "getFlowInfo(): Readonly<FlowInfo>",
+        "recordStepRenderTime(stepId: string | number, renderTime: number): void",
+        "recordNavigationTime(direction: string, duration: number): void",
+        "getPerformanceMetrics(): {...}",
+        "recordActivity(): void",
+        "recordIdleStart(duration: number): void",
+        "recordIdleEnd(awayDuration: number): void",
+        "isUserIdle(): boolean",
+        "getAwayDuration(): number",
+        "calculateFlowProgress(completedSteps: number, totalSteps: number): number",
+        "checkForNewMilestones(progress: number): number[]",
+        "trackEvent(eventType: string, properties?: Record<string, any>): void",
+        "flush(): Promise<void>"
+      ]
+    },
+    {
+      "name": "AnalyticsManager",
+      "description": "Refactored facade for analytics operations. Delegates to specialized trackers via AnalyticsCoordinator. Responsibilities: high-level event tracking, context-dependent metric calculations, step duration tracking",
+      "methods": [
+        "registerProvider(provider: AnalyticsProvider): void",
+        "get providerCount(): number",
+        "setUserId(userId: string): void",
+        "setFlowId(flowId: string): void",
+        "setFlowInfo(flowInfo: {...}): void",
+        "flush(): Promise<void>",
+        "trackEvent(eventType: string, properties?: Record<string, any>): void",
+        "trackStepViewed(step: OnboardingStep<TContext>, context: TContext): void",
+        "trackStepCompleted(step: OnboardingStep<TContext>, context: TContext, duration: number, stepData?: Record<string, any>): void",
+        "trackStepSkipped(step: OnboardingStep<TContext>, context: TContext, skipReason?: string): void",
+        "trackStepRetried(step: OnboardingStep<TContext>, context: TContext, retryCount: number): void",
+        "trackStepValidationFailed(step: OnboardingStep<TContext>, context: TContext, validationErrors: string[]): void",
+        "trackStepHelpRequested(step: OnboardingStep<TContext>, context: TContext, helpType?: string): void",
+        "trackStepAbandoned(step: OnboardingStep<TContext>, context: TContext, timeOnStep: number): void",
+        "trackStepRenderTime(step: OnboardingStep<TContext>, context: TContext, renderTime: number): void",
+        "trackSlowStep(step: OnboardingStep<TContext>, context: TContext, duration: number): void",
+        "trackFlowStarted(context: TContext, startMethod?: 'fresh' | 'resumed'): void",
+        "trackFlowCompleted(context: TContext): void",
+        "trackFlowPaused(context: TContext, reason?: string): void",
+        "trackFlowResumed(context: TContext, resumePoint: string): void",
+        "trackFlowAbandoned(context: TContext, abandonmentReason?: string): void",
+        "trackFlowReset(context: TContext, resetReason?: string): void",
+        "trackNavigationBack(fromStep: OnboardingStep<TContext>, toStep: OnboardingStep<TContext>): void",
+        "trackNavigationForward(fromStep: OnboardingStep<TContext>, toStep: OnboardingStep<TContext>): void",
+        "trackNavigationJump(fromStep: OnboardingStep<TContext>, toStep: OnboardingStep<TContext>): void",
+        "trackDataChanged(context: TContext, changedFields: string[], oldData: any, newData: any): void",
+        "trackPersistenceSuccess(context: TContext, persistenceTime: number): void",
+        "trackPersistenceFailure(context: TContext, error: Error): void",
+        "trackUserIdle(step: OnboardingStep<TContext>, context: TContext, idleDuration: number): void",
+        "trackUserReturned(step: OnboardingStep<TContext>, context: TContext, awayDuration: number): void",
+        "trackChecklistItemToggled(itemId: string, isCompleted: boolean, step: OnboardingStep<TContext>): void",
+        "trackChecklistProgressChanged(step: OnboardingStep<TContext>, progress: {...}): void",
+        "trackErrorEncountered(error: Error, context: TContext, stepId?: string | number): void",
+        "trackProgressMilestone(context: TContext, milestone: number): void"
+      ]
+    },
+    {
+      "name": "AhaTracker",
+      "description": "Singleton class for tracking aha moments across the application. Automatically deduplicates events and provides provider management",
+      "methods": [
+        "static getInstance(config?: AhaTrackerConfig): AhaTracker",
+        "static resetInstance(): void",
+        "initialize(analyticsManager: AnalyticsManager): void",
+        "addProvider(provider: AnalyticsProvider): void",
+        "linkToEngine(context: EngineContext): void",
+        "updateConfig(config: Partial<AhaTrackerConfig>): void",
+        "track(params: TrackAhaParams): Promise<AhaEvent | null>",
+        "getUserAhaStats(userId: string): AhaUserStats",
+        "clearUserData(userId: string): void"
+      ]
+    }
+  ],
+  "useOnboardingReturn": {
+    "description": "Return type of the useOnboarding hook containing state and action methods for controlling the onboarding flow",
+    "state": {
+      "engine": {
+        "type": "OnboardingEngine<TContext> | null",
+        "description": "The underlying OnboardingEngine instance"
+      },
+      "engineInstanceId": {
+        "type": "number | undefined",
+        "description": "Unique identifier for this engine instance"
+      },
+      "state": {
+        "type": "EngineState<TContext> | null",
+        "description": "Current state of the onboarding engine including currentStep, progress, and metadata"
+      },
+      "loading": {
+        "type": "LoadingState",
+        "description": "Granular loading state breakdown (isHydrating, isEngineProcessing, isComponentProcessing, isAnyLoading)",
+        "subproperties": [
+          "isHydrating: boolean",
+          "isEngineProcessing: boolean",
+          "isComponentProcessing: boolean",
+          "isAnyLoading: boolean"
+        ]
+      },
+      "isLoading": {
+        "type": "boolean",
+        "description": "Deprecated: Use loading.isAnyLoading instead. Convenience boolean that is true when any loading is occurring"
+      },
+      "currentStep": {
+        "type": "OnboardingStep<TContext> | null | undefined",
+        "description": "The current step in the onboarding flow"
+      },
+      "isCompleted": {
+        "type": "boolean | undefined",
+        "description": "Whether the onboarding flow is completed"
+      },
+      "error": {
+        "type": "Error | null",
+        "description": "The current error state of the engine, if any"
+      },
+      "pluginManager": {
+        "type": "PluginManager<TContext> | null",
+        "description": "Plugin manager instance for managing installed plugins"
+      }
+    },
+    "methods": {
+      "actions": [
+        {
+          "name": "next",
+          "signature": "next(stepSpecificData?: Record<string, unknown>): Promise<void>",
+          "description": "Navigate to the next step"
+        },
+        {
+          "name": "previous",
+          "signature": "previous(): Promise<void>",
+          "description": "Navigate to the previous step"
+        },
+        {
+          "name": "skip",
+          "signature": "skip(): Promise<void>",
+          "description": "Skip the current step"
+        },
+        {
+          "name": "goToStep",
+          "signature": "goToStep(stepId: string, stepSpecificData?: Record<string, unknown>): Promise<void>",
+          "description": "Navigate to a specific step"
+        },
+        {
+          "name": "updateContext",
+          "signature": "updateContext(newContextData: Partial<TContext>): Promise<void>",
+          "description": "Update the onboarding context"
+        },
+        {
+          "name": "reset",
+          "signature": "reset(newConfig?: Partial<OnboardingEngineConfig<TContext>>): Promise<void>",
+          "description": "Reset the onboarding flow with optional new configuration"
+        }
+      ],
+      "pluginManagement": [
+        {
+          "name": "installPlugin",
+          "signature": "installPlugin(plugin: OnboardingPlugin<TContext>): Promise<void>",
+          "description": "Install a plugin dynamically"
+        },
+        {
+          "name": "uninstallPlugin",
+          "signature": "uninstallPlugin(pluginName: string): Promise<void>",
+          "description": "Uninstall a plugin by name"
+        },
+        {
+          "name": "getInstalledPlugins",
+          "signature": "getInstalledPlugins(): OnboardingPlugin<TContext>[]",
+          "description": "Get all currently installed plugins"
+        },
+        {
+          "name": "isPluginInstalled",
+          "signature": "isPluginInstalled(pluginName: string): boolean",
+          "description": "Check if a plugin is installed"
+        }
+      ],
+      "ui": [
+        {
+          "name": "setComponentLoading",
+          "signature": "setComponentLoading(loading: boolean): void",
+          "description": "Set component loading state"
+        },
+        {
+          "name": "renderStep",
+          "signature": "renderStep(): React.ReactNode",
+          "description": "Render the current step's content as a React node"
+        }
+      ]
+    }
+  },
+  "engineConfig": {
+    "description": "OnboardingEngineConfig - Configuration object passed to the OnboardingEngine constructor",
+    "options": [
+      {
+        "name": "steps",
+        "type": "OnboardingStep<TContext>[]",
+        "required": true,
+        "description": "The list of steps in the onboarding flow. Each step should implement the OnboardingStep interface"
+      },
+      {
+        "name": "flowId",
+        "type": "string",
+        "required": false,
+        "description": "Unique identifier for this onboarding flow. Useful when running multiple flows on the same page"
+      },
+      {
+        "name": "flowName",
+        "type": "string",
+        "required": false,
+        "description": "Human-readable name for this onboarding flow"
+      },
+      {
+        "name": "flowVersion",
+        "type": "string",
+        "required": false,
+        "description": "Version of this onboarding flow. Follows semantic versioning (e.g., '1.0.0', '2.1.0')"
+      },
+      {
+        "name": "flowMetadata",
+        "type": "Record<string, unknown>",
+        "required": false,
+        "description": "Optional metadata for the flow (e.g., target audience, feature flags)"
+      },
+      {
+        "name": "initialStepId",
+        "type": "string | number",
+        "required": false,
+        "description": "The initial step ID to start the onboarding flow. If not provided, the first step in the steps array will be used"
+      },
+      {
+        "name": "initialContext",
+        "type": "Partial<TContext>",
+        "required": false,
+        "description": "The initial context for the onboarding flow. This can be used to pre-populate the context with data"
+      },
+      {
+        "name": "onFlowComplete",
+        "type": "(context: TContext) => void | Promise<void>",
+        "required": false,
+        "description": "Callback executed when the entire onboarding flow is completed"
+      },
+      {
+        "name": "onStepChange",
+        "type": "(newStep: OnboardingStep<TContext> | null, oldStep: OnboardingStep<TContext> | null, context: TContext) => void",
+        "required": false,
+        "description": "Callback executed when the current step changes"
+      },
+      {
+        "name": "loadData",
+        "type": "DataLoadFn<TContext>",
+        "required": false,
+        "description": "Function to load persisted data. Returns LoadedData or null/undefined"
+      },
+      {
+        "name": "persistData",
+        "type": "(context: TContext, currentStepId: string | number | null) => Promise<void> | void",
+        "required": false,
+        "description": "Function to persist context and step data"
+      },
+      {
+        "name": "clearPersistedData",
+        "type": "() => Promise<void> | void",
+        "required": false,
+        "description": "Function to clear all persisted data"
+      },
+      {
+        "name": "plugins",
+        "type": "OnboardingPlugin<TContext>[]",
+        "required": false,
+        "description": "Optional plugins to extend the functionality of the onboarding engine. Each plugin should implement the OnboardingPlugin interface"
+      },
+      {
+        "name": "debug",
+        "type": "boolean",
+        "required": false,
+        "description": "Optional configuration for debugging the onboarding engine. If set to true, additional debug information will be logged"
+      },
+      {
+        "name": "analytics",
+        "type": "AnalyticsConfig | boolean",
+        "required": false,
+        "description": "Analytics configuration for tracking onboarding events"
+      },
+      {
+        "name": "publicKey",
+        "type": "string",
+        "required": false,
+        "description": "Project public key for authentication with OnboardJS Cloud. It is safe to expose this key in your frontend code"
+      },
+      {
+        "name": "apiHost",
+        "type": "string",
+        "required": false,
+        "description": "Host URL for the OnboardJS Cloud API"
+      },
+      {
+        "name": "cloudOptions",
+        "type": "{ enabled?: boolean; samplingRate?: number }",
+        "required": false,
+        "description": "Optional configuration for OnboardJS Cloud Analytics. Control analytics enablement and event sampling"
+      },
+      {
+        "name": "userId",
+        "type": "string | null",
+        "required": false,
+        "description": "The user ID for tracking user-specific events"
+      },
+      {
+        "name": "registry",
+        "type": "OnboardingEngineRegistry",
+        "required": false,
+        "description": "Optional registry instance for SSR-safe engine management. If provided, the engine will register itself with this registry instead of the global one. Recommended for SSR environments to prevent cross-request state pollution"
+      }
+    ]
+  },
+  "providerProps": {
+    "description": "OnboardingProvider component props - extends OnboardingEngineConfig with React-specific properties",
+    "properties": [
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": true,
+        "description": "React children to render within the provider"
+      },
+      {
+        "name": "steps",
+        "type": "OnboardingStep<TContext>[]",
+        "required": true,
+        "description": "The array of steps to initialize the onboarding flow"
+      },
+      {
+        "name": "localStoragePersistence",
+        "type": "LocalStoragePersistenceOptions",
+        "required": false,
+        "description": "Configuration for local storage persistence of onboarding state"
+      },
+      {
+        "name": "customOnDataLoad",
+        "type": "UsePersistenceConfig<TContext>['customOnDataLoad']",
+        "required": false,
+        "description": "Custom data loading handler"
+      },
+      {
+        "name": "customOnDataPersist",
+        "type": "UsePersistenceConfig<TContext>['customOnDataPersist']",
+        "required": false,
+        "description": "Custom data persistence handler"
+      },
+      {
+        "name": "customOnClearPersistedData",
+        "type": "UsePersistenceConfig<TContext>['customOnClearPersistedData']",
+        "required": false,
+        "description": "Custom handler to clear persisted data"
+      },
+      {
+        "name": "onFlowComplete",
+        "type": "(context: TContext) => Promise<void> | void",
+        "required": false,
+        "description": "Callback executed when the entire onboarding flow is completed"
+      },
+      {
+        "name": "componentRegistry",
+        "type": "StepComponentRegistry<TContext>",
+        "required": false,
+        "description": "A registry mapping step types and ids to their React components. This allows users to provide their own custom step components. This prop is now optional and will be overridden by the OnboardingStep.component property if defined"
+      },
+      {
+        "name": "initialStepId",
+        "type": "string | number",
+        "required": false,
+        "description": "The initial step ID to start the onboarding flow"
+      },
+      {
+        "name": "initialContext",
+        "type": "Partial<TContext>",
+        "required": false,
+        "description": "The initial context for the onboarding flow"
+      },
+      {
+        "name": "onStepChange",
+        "type": "(newStep: OnboardingStep<TContext> | null, oldStep: OnboardingStep<TContext> | null, context: TContext) => void",
+        "required": false,
+        "description": "Callback executed when the current step changes"
+      },
+      {
+        "name": "plugins",
+        "type": "OnboardingPlugin<TContext>[]",
+        "required": false,
+        "description": "Optional plugins to extend the functionality"
+      },
+      {
+        "name": "debug",
+        "type": "boolean",
+        "required": false,
+        "description": "Enable debug logging"
+      },
+      {
+        "name": "flowId",
+        "type": "string",
+        "required": false,
+        "description": "Unique identifier for this onboarding flow"
+      },
+      {
+        "name": "flowName",
+        "type": "string",
+        "required": false,
+        "description": "Human-readable name for the flow"
+      },
+      {
+        "name": "flowVersion",
+        "type": "string",
+        "required": false,
+        "description": "Version of the onboarding flow"
+      },
+      {
+        "name": "flowMetadata",
+        "type": "Record<string, unknown>",
+        "required": false,
+        "description": "Optional metadata for the flow"
+      },
+      {
+        "name": "publicKey",
+        "type": "string",
+        "required": false,
+        "description": "Project public key for OnboardJS Cloud authentication"
+      },
+      {
+        "name": "apiHost",
+        "type": "string",
+        "required": false,
+        "description": "Host URL for the OnboardJS Cloud API"
+      },
+      {
+        "name": "cloudOptions",
+        "type": "{ enabled?: boolean; samplingRate?: number }",
+        "required": false,
+        "description": "Configuration for OnboardJS Cloud Analytics"
+      },
+      {
+        "name": "analytics",
+        "type": "AnalyticsConfig | boolean",
+        "required": false,
+        "description": "Analytics configuration for tracking onboarding events"
+      },
+      {
+        "name": "userId",
+        "type": "string | null",
+        "required": false,
+        "description": "The user ID for tracking user-specific events"
+      }
+    ]
+  }
+}
