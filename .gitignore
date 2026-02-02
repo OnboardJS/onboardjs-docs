@@ -13,6 +13,9 @@
 /.next/
 /out/
 
+# generated search data
+/src/markdoc/search-data.json
+
 # production
 /build
 
